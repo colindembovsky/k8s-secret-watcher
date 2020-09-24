@@ -17,7 +17,7 @@ hook::config() {
       "namespace": {
         "nameSelector": {
           "matchNames": [
-            "dev"
+            "$NAMESPACE"
           ]
         }
       }
@@ -31,14 +31,16 @@ hook::trigger() {
   # ignore Synchronization for simplicity
   type=$(jq -r '.[0].type' $BINDING_CONTEXT_PATH)
   if [[ $type == "Synchronization" ]] ; then
-    echo Got Synchronization event
+    echo "Got Synchronization event for $NAMESPACE"
     exit 0
   fi
 
   for secret in $(jq -r '.[] | .object.metadata.name' $BINDING_CONTEXT_PATH)
   do
     # do stuff
-    echo Secret $secret created or changed!!
+    echo Secret $secret created!!
+    echo Namespace = $NAMESPACE
+    echo SPN_ID = $AZ_SPN_CLIENT_ID
   done
 }
 
